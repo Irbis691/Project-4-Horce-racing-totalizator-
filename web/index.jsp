@@ -7,8 +7,6 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <fmt:setBundle basename="resources.pagecontent" />
 <!DOCTYPE html>
-<%@page import="races.resources.ForTableOnIndex"%>
-<c:set var="races" value="${ForTableOnIndex.getRaceList()}" />
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -51,49 +49,6 @@
                     <fmt:message key="newsText"/>
                     <img src="cute_horse.png" width="200">
                 </p>
-            </div>
-            <div id="content">
-                <h2><fmt:message key="racesTitle"/></h2>
-                <center>
-                    <table class="races">
-                        <tbody>
-                            <tr>
-                                <th><fmt:message key="name"/></th>
-                                <th><fmt:message key="date"/></th>
-                            </tr>
-                            <c:forEach var="elem" items="${races}">
-                                <tr>
-                                    <td><c:out value="${elem.getRaceName()}" /></td>
-                                    <td><c:out value="${elem.getRaceDateTime()}" /></td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
-                </center>
-            </div>
-            <div id="content">
-                <h2><fmt:message key="racesTitle"/></h2>
-                <center>
-                    <table class="races">
-                        <tbody>                
-                            <tr>
-                                <th><fmt:message key="name"/></th>
-                                <th><fmt:message key="date"/></th>
-                            </tr>
-                            <tr>
-                                <td>Race</td>
-                                <td>2015-07-01</td>
-                            </tr>
-                            <tr>
-                                <td>Speed race</td>
-                                <td>2015-08-01</td>
-                            </tr>
-                            <tr>
-                                <td>Slow race</td>
-                                <td>2016-08-01</td>
-                            </tr>
-                        </tbody>
-                    </table></center>
             </div>
         </div>
     </body>

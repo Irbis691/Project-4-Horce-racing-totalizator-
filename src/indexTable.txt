@@ -1,0 +1,55 @@
+<%@page import="races.entities.Race"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="races.dao.connection.JdbcConnection"%>
+<%@page import="races.dao.factory.DaoFactory"%>
+<%@page import="races.dao.factory.RealDaoFactory"%>
+
+        <%
+            JdbcConnection connection = JdbcConnection.getInstance();
+            DaoFactory daoFactory = new RealDaoFactory(connection);
+        %>
+
+        <div id="content">
+            <h2><fmt:message key="racesTitle"/></h2>
+            <center>
+        <table class="races">
+            <tbody>                
+                <tr>
+                    <th><fmt:message key="name"/></th>
+                    <th><fmt:message key="date"/></th>
+                </tr>
+                <%           
+                    ArrayList<Race> races =
+                            (ArrayList<Race>) daoFactory.createRaceDao().findAll();
+                    for (Race race : races) {
+                %>
+                <tr>
+                    <td><%= race.getRaceName()%></td>
+                    <td><%= race.getRaceDateTime()%></td>
+                </tr>
+                <%
+                    }
+                %>
+            </tbody>
+        </table></center>
+        </div>
+
+<div id="content">
+                <h2><fmt:message key="racesTitle"/></h2>
+                <center>
+                    <table class="races">
+                        <tbody>
+                            <tr>
+                                <th><fmt:message key="name"/></th>
+                                <th><fmt:message key="date"/></th>
+                            </tr>
+                            <c:forEach var="elem" items="${races}">
+                                <tr>
+                                    <td><c:out value="${elem.getRaceName()}" /></td>
+                                    <td><c:out value="${elem.getRaceDateTime()}" /></td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </center>
+            </div>

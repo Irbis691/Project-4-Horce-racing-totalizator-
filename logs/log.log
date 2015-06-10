@@ -1,0 +1,90 @@
+2015-06-02 18:48:04 ERROR LoginCommand:75 - User input wrong login
+2015-06-02 19:22:32 ERROR RegistrationCommand:53 - User input already existing login
+2015-06-04 18:18:08 ERROR LoginCommand:41 - User input wrong password
+2015-06-06 14:52:16 ERROR PlaceBetCommand:38 - User tried to create existed bet
+2015-06-06 14:52:37 ERROR PlaceBetCommand:38 - User tried to create existed bet
+2015-06-06 14:53:34 ERROR PlaceBetCommand:38 - User tried to create existed bet
+2015-06-06 14:53:44 ERROR PlaceBetCommand:38 - User tried to create existed bet
+2015-06-06 14:54:46 ERROR PlaceBetCommand:38 - User tried to create existed bet
+2015-06-06 15:22:47 ERROR LoginCommand:47 - User input wrong login
+2015-06-06 15:23:38 ERROR RegistrationCommand:44 - User input already existing login
+2015-06-06 15:26:34 ERROR LoginCommand:47 - User input wrong login
+2015-06-06 18:13:35 ERROR RegistrationCommand:44 - User input already existing login
+2015-06-06 19:10:29 ERROR RegistrationCommand:42 - Empty input in registration
+2015-06-06 19:10:42 ERROR RegistrationCommand:42 - Empty input in registration
+2015-06-06 19:10:43 ERROR RegistrationCommand:42 - Empty input in registration
+2015-06-06 19:11:12 ERROR RegistrationCommand:42 - Empty input in registration
+2015-06-06 19:11:15 ERROR RegistrationCommand:42 - Empty input in registration
+2015-06-06 19:11:20 ERROR RegistrationCommand:42 - Empty input in registration
+2015-06-06 19:11:25 ERROR RegistrationCommand:50 - User input already existing login
+2015-06-06 19:17:35 ERROR RegistrationCommand:45 - User input already existing login
+2015-06-06 19:17:53 ERROR RegistrationCommand:50 - Empty input in registration
+2015-06-06 19:21:58 ERROR RegistrationCommand:50 - Empty input in registration
+2015-06-06 19:22:24 ERROR RegistrationCommand:51 - Empty input in registration
+2015-06-06 19:22:49 ERROR RegistrationCommand:51 - Empty input in registration
+2015-06-06 19:22:54 ERROR RegistrationCommand:51 - Empty input in registration
+2015-06-06 19:22:59 ERROR RegistrationCommand:45 - User input already existing login
+2015-06-06 19:23:04 ERROR RegistrationCommand:45 - User input already existing login
+2015-06-06 19:23:06 ERROR RegistrationCommand:51 - Empty input in registration
+2015-06-06 19:36:05 ERROR RegistrationCommand:35 - User not choose race
+2015-06-06 19:40:08 ERROR RegistrationCommand:35 - User not choose race
+2015-06-06 19:40:18 ERROR RegistrationCommand:35 - User not choose race
+2015-06-06 19:40:27 ERROR RegistrationCommand:35 - User not choose race
+2015-06-06 19:40:33 ERROR RegistrationCommand:35 - User not choose race
+2015-06-06 19:41:35 ERROR PlaceBetCommand:48 - User not input bet size
+2015-06-06 19:43:14 ERROR PlaceBetCommand:48 - User not input bet size
+2015-06-06 19:43:23 ERROR PlaceBetCommand:48 - User not input bet size
+2015-06-06 19:43:32 ERROR PlaceBetCommand:48 - User not input bet size
+2015-06-06 19:43:38 ERROR JdbcConnection:60 - Bet insert error: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Column 'horseName' cannot be null
+2015-06-06 19:44:42 ERROR JdbcConnection:60 - Bet insert error: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Column 'horseName' cannot be null
+2015-06-06 19:44:45 ERROR RegistrationCommand:35 - User not choose race
+2015-06-06 19:44:49 ERROR PlaceBetCommand:48 - User not input bet size
+2015-06-06 19:45:20 ERROR PlaceBetCommand:48 - User not input bet size
+2015-06-06 19:45:59 ERROR PlaceBetCommand:48 - User not input bet size
+2015-06-06 19:46:03 ERROR PlaceBetCommand:48 - User not input bet size
+2015-06-06 19:49:11 ERROR PlaceBetCommand:39 - User not choose horse
+2015-06-06 19:49:19 ERROR PlaceBetCommand:47 - User not input bet size
+2015-06-06 19:49:26 ERROR JdbcConnection:60 - Bet insert error: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot add or update a child row: a foreign key constraint fails (`mydb`.`bets`, CONSTRAINT `raceBet` FOREIGN KEY (`raceId`) REFERENCES `races` (`raceId`) ON DELETE CASCADE ON UPDATE CASCADE)
+2015-06-06 19:50:19 ERROR JdbcConnection:60 - Bet insert error: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot add or update a child row: a foreign key constraint fails (`mydb`.`bets`, CONSTRAINT `raceBet` FOREIGN KEY (`raceId`) REFERENCES `races` (`raceId`) ON DELETE CASCADE ON UPDATE CASCADE)
+2015-06-06 19:51:11 ERROR LoginCommand:40 - User input wrong password
+2015-06-06 19:53:36 ERROR JdbcConnection:60 - Bet insert error: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot add or update a child row: a foreign key constraint fails (`mydb`.`bets`, CONSTRAINT `raceBet` FOREIGN KEY (`raceId`) REFERENCES `races` (`raceId`) ON DELETE CASCADE ON UPDATE CASCADE)
+2015-06-06 19:57:03 ERROR JdbcConnection:60 - Bet insert error: com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot add or update a child row: a foreign key constraint fails (`mydb`.`bets`, CONSTRAINT `raceBet` FOREIGN KEY (`raceId`) REFERENCES `races` (`raceId`) ON DELETE CASCADE ON UPDATE CASCADE)
+2015-06-06 19:59:28 ERROR PlaceBetCommand:39 - User not choose horse
+2015-06-06 20:07:43 ERROR RegistrationCommand:33 - User not input bet id
+2015-06-06 20:07:45 ERROR RegistrationCommand:35 - User not input bet id
+2015-06-06 20:07:50 ERROR RegistrationCommand:43 - User not input new bet size
+2015-06-06 20:08:58 ERROR RegistrationCommand:35 - User not input bet id
+2015-06-06 20:14:30 ERROR DeleteUserCommand:31 - User not input bet id
+2015-06-06 20:16:59 ERROR DeleteUserCommand:31 - Admin not choose what user delete
+2015-06-06 20:17:32 ERROR DeleteUserCommand:31 - Admin not choose what user delete
+2015-06-06 20:17:35 ERROR DeleteUserCommand:31 - Admin not choose what user delete
+2015-06-06 20:22:26 ERROR RegistrationCommand:51 - Empty input in registration
+2015-06-06 20:24:47 ERROR RegistrationCommand:51 - Empty input in registration
+2015-06-06 20:24:49 ERROR RegistrationCommand:51 - Empty input in registration
+2015-06-06 20:34:43 ERROR TakeHorsesParamCommand:37 - User not choose race
+2015-06-06 20:39:02 ERROR TakeHorsesParamCommand:37 - User not choose race
+2015-06-06 20:39:07 ERROR UpdateHorsePlaceCommand:42 - Admin not input new place
+2015-06-06 20:39:15 ERROR UpdateHorsePlaceCommand:42 - Admin not input new place
+2015-06-06 20:39:29 ERROR UpdateHorsePlaceCommand:42 - Admin not input new place
+2015-06-06 20:39:31 ERROR UpdateHorsePlaceCommand:42 - Admin not input new place
+2015-06-06 20:41:11 ERROR UpdateHorsePlaceCommand:32 - Admin not choose horse
+2015-06-06 20:41:18 ERROR UpdateHorsePlaceCommand:40 - Admin not input new place
+2015-06-06 21:04:25 ERROR UpdateHorsePlaceCommand:32 - Admin not choose horse
+2015-06-06 21:04:27 ERROR TakeHorsesParamCommand:37 - User not choose race
+2015-06-06 21:04:50 ERROR TakeHorsesParamCommand:37 - User not choose race
+2015-06-06 21:07:26 ERROR TakeHorsesParamCommand:37 - User not choose race
+2015-06-06 21:07:28 ERROR UpdateHorseCoeffCommand:32 - Bookie not choose horse
+2015-06-06 21:07:35 ERROR UpdateHorseCoeffCommand:40 - Bookie not input new coefficient
+2015-06-06 21:07:50 ERROR UpdateHorseCoeffCommand:40 - Bookie not input new coefficient
+2015-06-06 21:08:00 ERROR UpdateHorseCoeffCommand:40 - Bookie not input new coefficient
+2015-06-06 21:15:12 ERROR RegistrationCommand:45 - User input already existing login
+2015-06-07 20:44:37 ERROR TakeHorsesParamCommand:37 - User not choose race
+2015-06-07 20:44:39 ERROR UpdateHorseCoeffCommand:32 - Bookie not choose horse
+2015-06-07 20:45:56 ERROR UpdateHorseCoeffCommand:40 - Bookie not input new coefficient
+2015-06-07 20:46:13 ERROR UpdateHorseCoeffCommand:40 - Bookie not input new coefficient
+2015-06-09 10:29:35 ERROR RegistrationCommand:59 - User input already existing login
+2015-06-09 10:30:56 ERROR RegistrationCommand:59 - User input already existing login
+2015-06-09 10:32:17 ERROR RegistrationCommand:59 - User input already existing login
+2015-06-09 10:44:28 ERROR RegistrationCommand:59 - User input already existing login
+2015-06-09 11:21:46 ERROR DeleteBetCommand:51 - User tried to delete not his/her bet
+2015-06-09 11:22:15 ERROR DeleteBetCommand:51 - User tried to delete not his/her bet

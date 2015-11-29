@@ -15,6 +15,7 @@ import races.dao.interfaces.BetDao;
 import races.entities.Bet;
 import races.dao.connection.JdbcConnection;
 import org.apache.log4j.Logger;
+import races.entities.BetStatus;
 
 /**
  * Class-realization of dao pattern for bet
@@ -27,7 +28,7 @@ public class BetDaoRealization implements BetDao {
     /**
      * logger-variable
      */
-    private static final Logger logger = Logger.getLogger(JdbcConnection.class);
+    private static final Logger logger = Logger.getLogger(BetDaoRealization.class);
 
     /**
      * variable for connection to DB
@@ -36,35 +37,40 @@ public class BetDaoRealization implements BetDao {
     /**
      * request for inserting bet to DB
      */
-    private final static String insertQuery = "INSERT INTO bets (userId, raceId, horseName, betSize) values (?, ?, ?, ?)";
+    private static final String INSERT = "INSERT INTO bets (userId, raceId, horseName, betSize, betStatus) values (?, ?, ?, ?, ?)";
     /**
      * request for finding bet in DB
      */
-    private final static String findQuery = "SELECT * FROM bets where betId = ?";
+    private static final String FIND = "SELECT * FROM bets where betId = ?";
     /**
-     * request for finding all bet in DB
+     * request for finding all bets in DB
      */
-    private final static String findAllQuery = "SELECT * FROM bets";
+    private static final String FIND_ALL = "SELECT * FROM bets";
     /**
-     * request for finding specified bets in DB
+     * request for finding specified by userId bets in DB
      */
-    private final static String findByUserIdQuery = "SELECT * FROM bets where userId = ?";
+    private static final String FIND_BY_USER_ID = "SELECT * FROM bets where userId = ?";
     /**
-     * request for finding specified bets in DB
+     * request for finding specified by raceId bets in DB
      */
-    private final static String findUserIdQuery = "SELECT userId FROM bets where betId = ?";    
-    /**
-     * request for updating bet in DB
-     */
-    private final static String updateQuery = "UPDATE bets SET userId = ?, raceId = ?, horseName = ?, betSize = ? WHERE betId = ?";
+    private static final String FIND_BY_RACE_ID = "SELECT * FROM bets where raceId = ?";
     /**
      * request for updating bet size in DB
      */
-    private final static String updateBetSizeQuery = "UPDATE bets SET betSize = ? WHERE betId = ?";
+    private static final String UPDATE_BET_SIZE = "UPDATE bets SET betSize = ? WHERE betId = ?";    
+    /**
+     * request for updating bet size in DB
+     */
+    private static final String UPDATE_BET_STATUS = "UPDATE bets SET betStatus = ? WHERE betId = ?";   
     /**
      * request for deleting bet from DB
      */
-    private final static String deleteQuery = "DELETE FROM bets WHERE betId = ?";
+    private static final String DELETE = "DELETE FROM bets WHERE betId = ?";
+    
+    /**
+     * number 0 corresponds to bet status "not played yet"
+     */
+    private static final int BET_NOT_PLAYED_YET = 0;
 
     /**
      * default constructor
@@ -82,23 +88,16 @@ public class BetDaoRealization implements BetDao {
      */
     @Override
     public void insert(Bet bet) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(insertQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(INSERT)) {
                 statement.setInt(1, bet.getUserId());
                 statement.setInt(2, bet.getRaceId());
                 statement.setString(3, bet.getHorseName());
                 statement.setDouble(4, bet.getBetSize());
+                statement.setDouble(5, BET_NOT_PLAYED_YET);
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("Bet insert error: " + ex);
@@ -113,11 +112,10 @@ public class BetDaoRealization implements BetDao {
     @Override
     public Bet find(int id) {
         Bet bet = new Bet();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND)) {
                 statement.setInt(1, id);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
@@ -125,14 +123,8 @@ public class BetDaoRealization implements BetDao {
                     bet.setUserId(rs.getInt(2));
                     bet.setRaceId(rs.getInt(3));
                     bet.setHorseName(rs.getString(4));
-                    bet.setBetSize(rs.getDouble(5));
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
+                    bet.setBetSize(rs.getDouble(5)); 
+                    bet.setBetStatus(defineBetStatus(rs.getInt(6)));
                 }
             }
         } catch (SQLException ex) {
@@ -140,33 +132,27 @@ public class BetDaoRealization implements BetDao {
         }
         return bet;
     }
-
+    
     /**
      * @see BetDao#findAll()
+     *
      */
     @Override
     public List<Bet> findAll() {
         List<Bet> bets = new ArrayList<>();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findAllQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND_ALL)) {
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     bets.add(new Bet(rs.getInt(1), rs.getInt(2), rs.getInt(3),
-                            rs.getString(4), rs.getDouble(5)));
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
+                            rs.getString(4), rs.getDouble(5),
+                            defineBetStatus(rs.getInt(6))));
                 }
             }
         } catch (SQLException ex) {
-            logger.error("Bet findAll error: " + ex);
+            logger.error("Bet find error: " + ex);
         }
         return bets;
     }
@@ -179,60 +165,67 @@ public class BetDaoRealization implements BetDao {
     @Override
     public List<Bet> findByUserId(int userId) {
         List<Bet> bets = new ArrayList<>();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findByUserIdQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND_BY_USER_ID)) {
                 statement.setInt(1, userId);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     bets.add(new Bet(rs.getInt(1), rs.getInt(2), rs.getInt(3),
-                            rs.getString(4), rs.getDouble(5)));
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
+                            rs.getString(4), rs.getDouble(5),
+                            defineBetStatus(rs.getInt(6))));
                 }
             }
         } catch (SQLException ex) {
             logger.error("Bet findByUserId error: " + ex);
         }
         return bets;
-    }   
+    }       
     
     /**
-     * @see BetDao#update(races.entities.Bet)
+     * @see BetDao#findByRaceId(int)
      *
-     * @param bet
+     * @param raceId
      */
     @Override
-    public void update(Bet bet) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
+    public List<Bet> findByRaceId(int raceId) {
+        List<Bet> bets = new ArrayList<>();
         try {
-            try {
-                statement = con.prepareStatement(updateQuery);
-                statement.setInt(1, bet.getUserId());
-                statement.setInt(2, bet.getRaceId());
-                statement.setString(3, bet.getHorseName());
-                statement.setDouble(4, bet.getBetSize());
-                statement.setInt(5, bet.getBetId());
-                statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND_BY_RACE_ID)) {
+                statement.setInt(1, raceId);
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    bets.add(new Bet(rs.getInt(1), rs.getInt(2), rs.getInt(3),
+                            rs.getString(4), rs.getDouble(5),
+                            defineBetStatus(rs.getInt(6))));
                 }
             }
         } catch (SQLException ex) {
-            logger.error("Bet update error: " + ex);
+            logger.error("Bet findByUserId error: " + ex);
         }
+        return bets;
+    }    
+    
+     /**
+     * method for transforming db betStatus (0, 1 or 2) to web-app
+     * betStatus (BetStatus enum)
+     * 
+     * @param status
+     * @return 
+     */
+    private BetStatus defineBetStatus(int status) {
+        switch(status) {
+            case 0:
+                return BetStatus.NOT_PLAYED_YET;
+            case 1:
+                return BetStatus.WIN;
+            case 2:
+                return BetStatus.LOSE;
+        }
+        return BetStatus.NOT_PLAYED_YET;
     }
 
     /**
@@ -243,27 +236,40 @@ public class BetDaoRealization implements BetDao {
      */
     @Override
     public void updateBetSize(int betId, double betSize) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(updateBetSizeQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(UPDATE_BET_SIZE)) {
                 statement.setDouble(1, betSize);
                 statement.setInt(2, betId);
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("Bet updateBetSize error: " + ex);
         }
     }
 
+     /**
+     * @see BetDao#updateBetStatus(int, double)
+     *
+     * @param betId
+     * @param status
+     */
+    @Override
+    public void updateBetStatus(int betId, int status) {
+         try {
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(UPDATE_BET_STATUS)) {
+                statement.setDouble(1, status);
+                statement.setInt(2, betId);
+                statement.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            logger.error("Bet updateBetSize error: " + ex);
+        }
+    }
+    
     /**
      * @see BetDao#delete(int)
      *
@@ -271,20 +277,12 @@ public class BetDaoRealization implements BetDao {
      */
     @Override
     public void delete(int id) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(deleteQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(DELETE)) {
                 statement.setInt(1, id);
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("Bet delete error: " + ex);

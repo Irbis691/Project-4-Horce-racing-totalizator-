@@ -47,6 +47,24 @@ public interface HorseStatusDao {
     List<HorseStatus> findAll(int raceId);
 
     /**
+     * find horsePlace in DB with specified raceId
+     * 
+     * @param horseId
+     * @param raceId
+     * @return horse place in race
+     */
+    public int findHorsePlase(int horseId, int raceId);
+    
+    /**
+     * find horseCoeff in DB with specified raceId
+     * 
+     * @param horseId
+     * @param raceId
+     * @return horse place in race
+     */
+    public double findHorseCoeff(int horseId, int raceId);
+    
+    /**
      * update some horseStatus from DB
      * 
      * @param horseStatus 
@@ -58,16 +76,18 @@ public interface HorseStatusDao {
      * 
      * @param id
      * @param place 
+     * @param raceId 
      */
-    void updatePlace(int id, int place);
+    void updatePlace(int id, int place, int raceId);
     
     /**
      * update win rate of specified by id horse
      * 
      * @param id
+     * @param raceId
      * @param coeff
      */
-    void updateCoeff(int id, double coeff);
+    void updateCoeff(int id, int raceId, double coeff);
 
     /**
      * delete specified horseStatus

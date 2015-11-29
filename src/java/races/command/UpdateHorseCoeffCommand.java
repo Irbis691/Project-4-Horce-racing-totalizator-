@@ -32,19 +32,14 @@ public class UpdateHorseCoeffCommand implements ActionCommand {
     /**
      * String-constant for horse's name 
      */
-    private static final String PARAM_NAME_NAME = "name";
+    private static final String PARAM_NAME_NAME = "horseName";
     
     @Override
     public String execute(HttpServletRequest request) {
-        String page = new TakeRacesCommand().execute(request);
+        String page = new TakeHorsesWithCoeffOrPalacesCommand().execute(request);
+        int raceId = (Integer) request.getSession().getAttribute("raceId");
         double coeff;
-        String name = (String)request.getParameter(PARAM_NAME_NAME);
-        if (name == null) {
-            logger.error("Bookie not choose horse");
-            request.setAttribute("chooseHorse",
-                    MessageManager.getProperty("message.chooseHorse"));
-            return page;
-        }
+        String name = (String)request.getParameter(PARAM_NAME_NAME);       
         try {
             coeff = Double.parseDouble(request.getParameter(PARAM_NAME_COEFF));
         } catch (NumberFormatException ex) {
@@ -52,8 +47,9 @@ public class UpdateHorseCoeffCommand implements ActionCommand {
             request.setAttribute("inpHorCo",
                     MessageManager.getProperty("message.inpHorCo"));
             return page;
-        }
-        updateCoeff(name, coeff);
+        }        
+        updateCoeff(name, raceId, coeff);
+        new TakeHorsesWithCoeffOrPalacesCommand().execute(request);
         return page;
     }
     
@@ -62,10 +58,10 @@ public class UpdateHorseCoeffCommand implements ActionCommand {
      * @param name
      * @param coeff 
      */
-    private void updateCoeff(String name, double coeff) {
+    private void updateCoeff(String name, int raceId, double coeff) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        int id = daoFactory.createHorseDao().findId(name);
-        daoFactory.createHorseStatusDao().updateCoeff(id, coeff);
+        int id = daoFactory.createHorseDao().find(name).getHorseId();
+        daoFactory.createHorseStatusDao().updateCoeff(id, raceId, coeff);
     }
 }

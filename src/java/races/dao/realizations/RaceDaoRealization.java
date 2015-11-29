@@ -27,7 +27,7 @@ public class RaceDaoRealization implements RaceDao {
     /**
      * logger-variable 
      */
-    private static final Logger logger = Logger.getLogger(JdbcConnection.class);
+    private static final Logger logger = Logger.getLogger(RaceDaoRealization.class);
     
     /**
      * variable for connection to DB
@@ -36,35 +36,44 @@ public class RaceDaoRealization implements RaceDao {
     /**
      * request for inserting race to DB
      */
-    private final static String insertQuery = "INSERT INTO races (raceName, raceDateTime) values (?, ?)";
+    private static final String INSERT = "INSERT INTO races (raceName, raceDateTime) values (?, ?)";
     /**
      * request for finding race in DB
      */
-    private final static String findQuery = "SELECT * FROM races where raceId = ?";
+    private static final String FIND = "SELECT * FROM races where raceId = ?";
     /**
      * request for finding all races in DB
      */
-    private final static String findAllQuery = "SELECT * FROM races";
-    /**
-     * request for finding date of specified (by name) race in DB
-     */
-    private final static String findDate = "SELECT raceDateTime FROM races where raceName = ?";
+    private static final String FIND_ALL = "SELECT * FROM races";
     /**
      * request for finding id of specified (by name) race in DB
      */
-    private final static String findRaceIdQuery = "SELECT raceId FROM races where raceName = ?";
+    private static final String FIND_RACE_ID = "SELECT raceId FROM races where raceName = ?";
     /**
      * request for finding name and date of specified (by id) race in DB
      */
-    private final static String findRaceNameQuery = "SELECT raceName, raceDateTime FROM races where raceId = ?";
+    private static final String FIND_RACE_NAME = "SELECT raceName, raceDateTime FROM races where raceId = ?";
     /**
      * request for updating race in DB
      */
-    private final static String updateQuery = "UPDATE races SET raceName = ?, raceDateTime = ? WHERE raceId = ?";
+    private static final String UPDATE = "UPDATE races SET raceName = ?, raceDateTime = ? WHERE raceId = ?";
+    /**
+     * request for updating race status in DB
+     */
+    private static final String UPDATE_STATUS = "UPDATE races SET raceStatus = ? WHERE raceId = ?";
     /**
      * request for deleting race from DB
      */
-    private final static String deleteQuery = "DELETE FROM races WHERE raceName = ?";
+    private static final String DELETE = "DELETE FROM races WHERE raceName = ?";
+    
+    /**
+     * number 0 corresponds to race status "not finished"
+     */
+    private static final int RACE_NOT_FINISHED = 0;
+    /**
+     * number 1 corresponds to race status "finished"
+     */
+    private static final int RACE_FINISHED = 1;
 
     /**
      * default constructor
@@ -81,21 +90,14 @@ public class RaceDaoRealization implements RaceDao {
      */
     @Override
     public void insert(Race race) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(insertQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                            = con.prepareStatement(INSERT)){
                 statement.setString(1, race.getRaceName());
                 statement.setDate(2, race.getRaceDateTime());
+                statement.setInt(3, RACE_NOT_FINISHED);
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("Race insert error: " + ex);
@@ -110,24 +112,17 @@ public class RaceDaoRealization implements RaceDao {
     @Override
     public Race find(int id) {
         Race race = new Race();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                            = con.prepareStatement(FIND)){
                 statement.setInt(1, id);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     race.setRaceId(rs.getInt(1));
                     race.setRaceName(rs.getString(2));
                     race.setRaceDateTime(rs.getDate(3));
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
+                    race.setRaceFinished((rs.getInt(4) != 0));
                 }
             }
         } catch (SQLException ex) {
@@ -142,59 +137,20 @@ public class RaceDaoRealization implements RaceDao {
     @Override
     public List<Race> findAll() {
         List<Race> races = new ArrayList<>();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findAllQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                            = con.prepareStatement(FIND_ALL)){
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
-                    races.add(new Race(rs.getInt(1), rs.getString(2), rs.getDate(3)));
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
+                    races.add(new Race(rs.getInt(1), rs.getString(2),
+                            rs.getDate(3), rs.getInt(4) != 0));
                 }
             }
         } catch (SQLException ex) {
             logger.error("Race findAll error: " + ex);
         }
         return races;
-    }
-    
-    /**
-     * @see RaceDao#findDate(java.lang.String) 
-     * 
-     * @param name 
-     */
-    @Override
-    public Date findDate(String name){
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
-        Date date = null;
-        try {
-            try {
-                statement = con.prepareStatement(findDate);
-                statement.setString(1, name);
-                ResultSet rs = statement.executeQuery();
-                while (rs.next()) {
-                    date = rs.getDate(1);
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            }
-        } catch (SQLException ex) {
-            logger.error("Race findDate error: " + ex);
-        }
-        return date;
     }
     
     /**
@@ -205,22 +161,14 @@ public class RaceDaoRealization implements RaceDao {
     @Override
     public int findRaceId(String raceName) {
         int raceId = 0;
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findRaceIdQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                            = con.prepareStatement(FIND_RACE_ID)){
                 statement.setString(1, raceName);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     raceId = rs.getInt(1);
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
                 }
             }
         } catch (SQLException ex) {
@@ -237,22 +185,14 @@ public class RaceDaoRealization implements RaceDao {
     @Override
     public String findRaceNameDate(int raceId){
         String raceName = null;
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findRaceNameQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                            = con.prepareStatement(FIND_RACE_NAME)){
                 statement.setInt(1, raceId);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     raceName = rs.getString(1) + ", " + rs.getString(2);
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
                 }
             }
         } catch (SQLException ex) {
@@ -268,22 +208,34 @@ public class RaceDaoRealization implements RaceDao {
      */
     @Override
     public void update(Race race) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(updateQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                            = con.prepareStatement(UPDATE)){
                 statement.setString(1, race.getRaceName());
                 statement.setDate(2, race.getRaceDateTime());
                 statement.setInt(3, race.getRaceId());
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
+            }
+        } catch (SQLException ex) {
+            logger.error("Race update error: " + ex);
+        }
+    }
+    
+    /**
+     * @see RaceDao#updateRaceStatus(races.entities.Race) 
+     * 
+     * @param raceId 
+     */
+    @Override
+    public void updateRaceStatus(int raceId) {
+        try {
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                            = con.prepareStatement(UPDATE_STATUS)){
+                statement.setInt(1, RACE_FINISHED);
+                statement.setInt(2, raceId);
+                statement.executeUpdate();
             }
         } catch (SQLException ex) {
             logger.error("Race update error: " + ex);
@@ -297,20 +249,12 @@ public class RaceDaoRealization implements RaceDao {
      */
     @Override
     public void delete(String raceName) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(deleteQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                            = con.prepareStatement(DELETE)){
                 statement.setString(1, raceName);
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("Race delete error: " + ex);

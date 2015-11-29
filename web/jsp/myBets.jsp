@@ -17,7 +17,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="style.css">
-        <title><fmt:message key="cl.console.title"/></title>
+        <title><fmt:message key="my.b"/></title>
     </head>
 </head>
 <body>
@@ -53,6 +53,7 @@
         <div id="fullpage">
             <center>
                 <h2><fmt:message key="my.b"/></h2>
+                <h3><fmt:message key="balance"/>"${balance}"</h3>
                 <table class="races">
                     <thead>
                         <tr>
@@ -60,14 +61,16 @@
                             <th><fmt:message key="r.name"/></th>
                             <th><fmt:message key="h.name"/></th>
                             <th><fmt:message key="b.size"/></th>
+                            <th><fmt:message key="b.status"/></th>
                         </tr>
                     <tbody>
                         <c:forEach var="elem" items="${bets.keySet()}">
-                            <tr>                      
+                            <tr>
                                 <td><c:out value="${elem.getBetId()}" /></td>
                                 <td><c:out value="${bets.get(elem)}" /></td>
                                 <td><c:out value="${elem.getHorseName()}" /></td>
-                                <td><c:out value="${elem.getBetSize()}" /></td>                       
+                                <td><c:out value="${elem.getBetSize()}" /></td>    
+                                <td><c:out value="${elem.getBetStatus()}" /></td>    
                             </tr>
                         </c:forEach>
                     </tbody>

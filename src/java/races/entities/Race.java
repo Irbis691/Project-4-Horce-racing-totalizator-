@@ -9,8 +9,9 @@ import java.sql.Date;
 
 /**
  * Class describes a race
+ *
  * @version 1.0 7 Jun 2015
- * 
+ *
  * @author Пазинич
  */
 public class Race {
@@ -29,6 +30,11 @@ public class Race {
     private Date raceDateTime;
 
     /**
+     * define is race finished or not
+     */
+    private boolean raceFinished;
+
+    /**
      * default constructor
      */
     public Race() {
@@ -36,31 +42,35 @@ public class Race {
 
     /**
      * constructor with all parameters
-     * 
+     *
      * @param raceId
      * @param raceName
      * @param raceDateTime
+     * @param raceFinished
      */
-    public Race(int raceId, String raceName, Date raceDateTime) {
+    public Race(int raceId, String raceName, Date raceDateTime, boolean raceFinished) {
         this.raceId = raceId;
         this.raceName = raceName;
         this.raceDateTime = raceDateTime;
+        this.raceFinished = raceFinished;
     }
-    
-     /**
+
+    /**
      * constructor with parameters except raceId
-     * 
+     *
      * @param raceName
      * @param raceDateTime
+     * @param raceFinished
      */
-    public Race(String raceName, Date raceDateTime) {        
+    public Race(String raceName, Date raceDateTime, boolean raceFinished) {
         this.raceName = raceName;
         this.raceDateTime = raceDateTime;
+        this.raceFinished = raceFinished;
     }
 
     /**
      * getter for raceId
-     * 
+     *
      * @return raceId
      */
     public int getRaceId() {
@@ -68,8 +78,8 @@ public class Race {
     }
 
     /**
-     * setter for raceId  
-     * 
+     * setter for raceId
+     *
      * @param raceId
      */
     public void setRaceId(int raceId) {
@@ -78,7 +88,7 @@ public class Race {
 
     /**
      * getter for raceName
-     * 
+     *
      * @return raceName
      */
     public String getRaceName() {
@@ -86,8 +96,8 @@ public class Race {
     }
 
     /**
-     * setter for raceName  
-     * 
+     * setter for raceName
+     *
      * @param raceName
      */
     public void setRaceName(String raceName) {
@@ -96,7 +106,7 @@ public class Race {
 
     /**
      * getter for raceDateTime
-     * 
+     *
      * @return raceDateTime
      */
     public Date getRaceDateTime() {
@@ -104,12 +114,30 @@ public class Race {
     }
 
     /**
-     * setter for raceDateTime  
-     * 
+     * setter for raceDateTime
+     *
      * @param raceDateTime
      */
     public void setRaceDateTime(Date raceDateTime) {
         this.raceDateTime = raceDateTime;
     }
-    
+
+    /**
+     * getter for raceFinished
+     *
+     * @return raceFinished
+     */
+    public boolean isRaceFinished() {
+        return raceFinished;
+    }
+
+    /**
+     * setter for raceFinished
+     *
+     * @param raceFinished
+     */
+    public void setRaceFinished(boolean raceFinished) {
+        this.raceFinished = raceFinished;
+    }
+
 }

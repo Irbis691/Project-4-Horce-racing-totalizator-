@@ -17,7 +17,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="style.css">
-        <title><fmt:message key="cl.console.title"/></title>
+        <title><fmt:message key="upd.del.bet"/></title>
     </head>
 </head>
 <body>
@@ -86,6 +86,8 @@
                     </tbody>
                 </table>
                 <p class="message">${inpBetId}</p>
+                <p class="message">${chfixBet}</p>
+                <p class="message">${dlfixBet}</p>
                 <p class="message">${inpBetSize}</p>
                 <p class="message">${delNotOwnBet}</p>
                 <ul id="buttons_list">

@@ -39,12 +39,6 @@ public interface RaceDao {
      */
     List<Race> findAll();
     
-    /** 
-     * @param raceName
-     * @return date of race with specified name
-     */
-    Date findDate(String raceName);
-    
     /**     
      * @param raceName
      * @return id of race with specified name
@@ -63,6 +57,13 @@ public interface RaceDao {
      * @param race 
      */
     void update(Race race);
+    
+    /**
+     * update race status in DB
+     * 
+     * @param raceId 
+     */
+    public void updateRaceStatus(int raceId);
     
     /**
      * delete specified race

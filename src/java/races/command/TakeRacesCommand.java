@@ -5,10 +5,13 @@
  */
 package races.command;
 
+import java.util.Iterator;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import races.dao.connection.JdbcConnection;
 import races.dao.factory.DaoFactory;
 import races.dao.factory.RealDaoFactory;
+import races.entities.Race;
 import races.resources.ConfigurationManager;
 
 /**
@@ -20,31 +23,19 @@ import races.resources.ConfigurationManager;
  */
 public class TakeRacesCommand implements ActionCommand{
 
-    private static final int ADMIN_TYPE = 1;
-    private static final int BOOKIE_TYPE = 2;
-    private static final int CLIENT_TYPE = 3;
-    
     @Override
     public String execute(HttpServletRequest request) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        request.setAttribute("races", daoFactory.createRaceDao().findAll());
-        String page;
-        int type = Integer.parseInt(request.getSession().getAttribute("type").toString());
-        switch(type) {
-            case ADMIN_TYPE:
-                page = ConfigurationManager.getProperty("path.page.adminConsole");
-                break;
-            case BOOKIE_TYPE:
-                page = ConfigurationManager.getProperty("path.page.bookieConsole");
-                break;
-            case CLIENT_TYPE:
-                page = ConfigurationManager.getProperty("path.page.placeBets");
-                break;
-            default:
-                page = ConfigurationManager.getProperty("path.page.login");
-                break;
-        }        
+        List<Race> races = daoFactory.createRaceDao().findAll();        
+        for(Iterator<Race> i = races.iterator(); i.hasNext();) {
+            if(i.next().isRaceFinished()) {
+                i.remove();
+            }
+        }
+        request.setAttribute("races", races);
+        String page;      
+        page = ConfigurationManager.getProperty("path.page.races");
         return page;
     }
     

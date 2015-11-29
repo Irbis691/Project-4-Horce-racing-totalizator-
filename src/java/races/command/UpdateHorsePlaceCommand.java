@@ -32,19 +32,14 @@ public class UpdateHorsePlaceCommand implements ActionCommand {
     /**
      * String-constant for horse's name 
      */
-    private static final String PARAM_NAME_NAME = "name";
+    private static final String PARAM_NAME_NAME = "horseName";
 
     @Override
     public String execute(HttpServletRequest request) {
-        String page = new TakeRacesCommand().execute(request);
+        int raceId = (Integer) request.getSession().getAttribute("raceId");
         String name = request.getParameter(PARAM_NAME_NAME);
+        String page = new TakeHorsesWithCoeffOrPalacesCommand().execute(request);        
         int place;
-        if (name == null) {
-            logger.error("Admin not choose horse");
-            request.setAttribute("chooseHorse",
-                    MessageManager.getProperty("message.chooseHorse"));
-            return page;
-        }
         try {
             place = Integer.parseInt(request.getParameter(PARAM_NAME_PLACE));
         } catch (NumberFormatException ex) {
@@ -53,7 +48,8 @@ public class UpdateHorsePlaceCommand implements ActionCommand {
                     MessageManager.getProperty("message.inpHorPl"));
             return page;
         }
-        updatePlace(name, place);
+        updatePlace(name, place, raceId);
+        new TakeHorsesWithCoeffOrPalacesCommand().execute(request); 
         return page;
     }
 
@@ -62,11 +58,11 @@ public class UpdateHorsePlaceCommand implements ActionCommand {
      * @param name
      * @param place 
      */
-    private void updatePlace(String name, int place) {
+    private void updatePlace(String name, int place, int raceId) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        int id = daoFactory.createHorseDao().findId(name);
-        daoFactory.createHorseStatusDao().updatePlace(id, place);
+        int id = daoFactory.createHorseDao().find(name).getHorseId();
+        daoFactory.createHorseStatusDao().updatePlace(id, place, raceId);
     }
 
 }

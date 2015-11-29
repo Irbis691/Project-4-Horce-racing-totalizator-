@@ -5,13 +5,14 @@
  */
 package races.command;
 
-import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import races.dao.factory.DaoFactory;
 import races.dao.factory.RealDaoFactory;
 import races.dao.connection.JdbcConnection;
+import races.entities.User;
 import races.resources.ConfigurationManager;
 import races.resources.MessageManager;
 
@@ -36,6 +37,8 @@ public class LoginCommand implements ActionCommand {
      */
     private static final String PARAM_NAME_PASSWORD = "password";
 
+    private static final int NOT_FINDED = 0;
+    
     @Override
     public String execute(HttpServletRequest request) {
         String page;
@@ -71,9 +74,9 @@ public class LoginCommand implements ActionCommand {
     private boolean checkLogin(String enterLogin) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        ArrayList<String> loginList = (ArrayList<String>) daoFactory.createUserDao().findLogins();
-        for (String logins : loginList) {
-            if (logins.equals(enterLogin)) {
+        List<User> users = daoFactory.createUserDao().findAll();
+        for (User user : users) {
+            if (user.getLogin().equals(enterLogin)) {
                 return true;
             }
         }
@@ -89,9 +92,9 @@ public class LoginCommand implements ActionCommand {
     private boolean checkPass(String enterPass) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        ArrayList<Integer> passwords = (ArrayList<Integer>) daoFactory.createUserDao().findPass();
-        for (Integer pass : passwords) {
-            if (pass == enterPass.hashCode()) {
+        List<User> users = daoFactory.createUserDao().findAll();
+        for (User user : users) {
+            if (user.getPasswordHash() == enterPass.hashCode()) {
                 return true;
             }
         }
@@ -105,7 +108,13 @@ public class LoginCommand implements ActionCommand {
     private int getType(String login) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        return daoFactory.createUserDao().getType(login);
+        List<User> users = daoFactory.createUserDao().findAll();
+        for(User user: users) {
+            if(user.getLogin().equals(login)) {
+                return user.getUserType();
+            }
+        }
+        return NOT_FINDED;
     }
 
     /**
@@ -115,7 +124,13 @@ public class LoginCommand implements ActionCommand {
     private int getId(String login) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        return daoFactory.createUserDao().getId(login);
+        List<User> users = daoFactory.createUserDao().findAll();
+        for(User user: users) {
+            if(user.getLogin().equals(login)) {
+                return user.getUserId();
+            }
+        }
+        return NOT_FINDED;
     }
 
 }

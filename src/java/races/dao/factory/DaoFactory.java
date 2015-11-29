@@ -19,6 +19,8 @@ import races.dao.interfaces.UserDao;
  */
 public abstract class DaoFactory {
     
+    private static final String REAL_DAO_FACTORY_CLASS = "races.dao.factory.RealDaoFactory";
+    
     /**
      * logger-variable
      */
@@ -54,7 +56,7 @@ public abstract class DaoFactory {
      */
     public static DaoFactory getInstance() {
         try {
-            return (DaoFactory) Class.forName("races.dao.factory.RealDaoFactory").newInstance();
+            return (DaoFactory) Class.forName(REAL_DAO_FACTORY_CLASS).newInstance();
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             logger.error("Error creating DaoFactory");
             return null;

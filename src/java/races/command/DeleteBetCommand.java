@@ -12,12 +12,13 @@ import races.dao.connection.JdbcConnection;
 import races.dao.factory.DaoFactory;
 import races.dao.factory.RealDaoFactory;
 import races.entities.Bet;
+import races.entities.BetStatus;
 import races.resources.ConfigurationManager;
 import races.resources.MessageManager;
 
 /**
  * Class-command for deleting bet from DB
- * 
+ *
  * @version 1.0 7 Jun 2015
  * @author Пазинич
  */
@@ -45,23 +46,24 @@ public class DeleteBetCommand implements ActionCommand {
                     MessageManager.getProperty("message.inpBetId"));
             return page;
         }
-        if(checkBetOwner(betId, request)) {
-            deleteBet(betId);            
+
+        JdbcConnection connection = JdbcConnection.getInstance();
+        DaoFactory daoFactory = new RealDaoFactory(connection);
+        if (checkBetOwner(betId, request)) {
+            if (daoFactory.createBetDao().find(betId).getBetStatus()
+                    == BetStatus.NOT_PLAYED_YET) {
+                daoFactory.createBetDao().delete(betId);
+            } else {
+                logger.error("User tried to delete already fixed bet");
+                request.setAttribute("dlfixBet",
+                        MessageManager.getProperty("message.dlfixBet"));                
+            }
         } else {
             logger.error("User tried to delete not his/her bet");
             request.setAttribute("delNotOwnBet",
                     MessageManager.getProperty("message.delNotOwnBet"));
-        }        
+        }
         return page;
-    }
-    /**
-     * submethod for interaction with DB
-     * @param betId 
-     */
-    private void deleteBet(int betId) {
-        JdbcConnection connection = JdbcConnection.getInstance();
-        DaoFactory daoFactory = new RealDaoFactory(connection);
-        daoFactory.createBetDao().delete(betId);
     }
 
     private boolean checkBetOwner(int betId, HttpServletRequest request) {
@@ -69,8 +71,8 @@ public class DeleteBetCommand implements ActionCommand {
         DaoFactory daoFactory = new RealDaoFactory(connection);
         List<Bet> bets = daoFactory.createBetDao().findByUserId(Integer.
                 parseInt(request.getSession().getAttribute("id").toString()));
-        for(Bet b: bets) {
-            if(b.getBetId() == betId) {
+        for (Bet b : bets) {
+            if (b.getBetId() == betId) {
                 return true;
             }
         }

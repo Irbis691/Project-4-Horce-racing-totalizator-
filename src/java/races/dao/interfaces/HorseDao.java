@@ -38,17 +38,11 @@ public interface HorseDao {
      */
     List<Horse> findAll();
     
-    /**
-     * @param id
-     * @return name of horse with specified id
-     */
-    String findName(int id);
-    
     /**     
      * @param name
      * @return id horse with specified name
      */
-    int findId(String name);
+    Horse find(String name);
 
     /**
      * update some horse from DB

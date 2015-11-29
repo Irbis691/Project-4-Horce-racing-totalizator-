@@ -1,14 +1,13 @@
-<%--
-    Document   : placeBets
-    Created on : 13.05.2015, 11:33:45
+<%-- 
+    Document   : horses
+    Created on : 21.11.2015, 16:53:46
     Author     : Pazynych
 --%>
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <fmt:setBundle basename="resources.pagecontent" />
-<c:set var="CLIENT_TYPE" value="${3}" />
-<c:if test="${empty type or type != CLIENT_TYPE}">
+<c:if test="${empty type}">
     <c:redirect url="/index.jsp"/>
 </c:if>
 <!DOCTYPE html>
@@ -16,7 +15,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" type="text/css" href="style.css">
-        <title><fmt:message key="cl.console.title"/></title>
+        <title><fmt:message key="place.bet"/></title>
     </head>
     <body>
         <div id="wrapper">
@@ -26,14 +25,14 @@
                         <li><form method="POST" action="./Controller" />
                             <input type = "hidden" name = "command" value = "changeLanguage" />
                             <input type = "hidden" name = "path" value = "path.page.placeBets" />
-                            <input type = "hidden" name = "req" value = "races" />
+                            <input type = "hidden" name = "req" value = "horses" />
                             <input type = "hidden" name = "lang" value = "en_US" />
                             <input type="submit" value="<fmt:message key="en"/>" class="button">
                             </form></li>
                         <li><form method="POST" action="./Controller" />
                             <input type = "hidden" name = "command" value = "changeLanguage" />
                             <input type = "hidden" name = "path" value = "path.page.placeBets" />
-                            <input type = "hidden" name = "req" value = "races" />
+                            <input type = "hidden" name = "req" value = "horses" />
                             <input type = "hidden" name = "lang" value = "ru_RU" />
                             <input type="submit" value="<fmt:message key="ru"/>" class="button">
                             </form></li>
@@ -50,60 +49,34 @@
             </ul>
             <div id="fullpage">
                 <center>
-                    <h2><fmt:message key="cl.console.title"/></h2>
+                    <h2><fmt:message key="place.bet"/></h2>
                     <table class="bets">
                         <thead>
                             <tr>
-                                <th><fmt:message key="sel.race"/></th>
-                                <th><fmt:message key="sel.horse"/></th>
                                 <th><fmt:message key="inp.bet.size"/></th>
-                            </tr>
-                        </thead>
+                                <th><fmt:message key="choose.horse"/></th>
+                            </tr>                        
+                        </thead>  
                         <tbody>
-                            <tr>
-                                <td align = "center">
-                                    <form method="POST" action="./Controller" />
-                                    <input type = "hidden" name = "command" value = "takeHorses" />                                    
-                                    <select name="race">
-                                        <option selected disabled><fmt:message key="def.race"/></option>
-                                        <c:forEach var="elem" items="${races}">
-                                            <option>
-                                                <c:out value="${elem.getRaceName()}, ${elem.getRaceDateTime()}" />
-                                            </option>
-                                        </c:forEach>
-                                    </select>
-                                    </br></br>
-                                    <input type="submit" value="<fmt:message key="choose"/>" class="small_button"/>
-                                    </form>
-                                </td>
-                        <form method="POST" action="./Controller" />
-                        <input type = "hidden" name = "command" value = "placeBet" />
-                        <input type = "hidden" name = "raceName" value = "${param.race}" />
-                        <input type = "hidden" name = "userId" value = "${id}" />
-                        <td valign="top">
-                            <select name="horseName">
-                                <option selected disabled><fmt:message key="def.horse"/></option>
-                                <c:forEach var="elem" items="${horses}">
-                                    <option>
-                                        <c:out value="${elem}" />
-                                    </option>
-                                </c:forEach>
-                            </select>
-                        </td>
-                        <td align = "center">
-                            <input type="text" name="betSize">
-                            </br></br>
-                            <input type="submit" value="<fmt:message key="waste"/>" class="small_button">
-                        </td>
-                        </form>
-                        </tr>
+                            <c:forEach var="elem" items="${horses.keySet()}">
+                            <form method="POST" action="./Controller">
+                                <tr>
+                                    <td>
+                                        <input type = "text" name = "betSize">
+                                    </td>
+                                    <td>
+                                        <input type = "hidden" name = "command" value = "placeBet" />
+                                        <input type = "hidden" name = "horseName" value = "${elem}" />
+                                        <input type="submit" value="<c:out value="${elem}" /><fmt:message key="curr.coeff"/><c:out value="${horses.get(elem)}" />" class="button">
+                                    </td>
+                                </tr>
+                            </form>
+                        </c:forEach>  
                         </tbody>
                     </table>
-                    <p class="message">${chooseRace}</p>
-                    <p class="message">${existedBet}</p>
-                    <p class="message">${chooseHorse}</p>
                     <p class="message">${notInpBet}</p>
-                    <ul id="buttons_list">                        
+                    <p class="message">${existedBet}</p>
+                    <ul id="buttons_list">   
                         <li>
                             <form method="POST" action="./Controller" />
                             <input type = "hidden" name = "command" value = "takeUserBets" />
@@ -113,6 +86,12 @@
                         <li><form method="POST" action="./Controller" />
                             <input type = "hidden" name = "command" value = "toResDelPage" />
                             <input type="submit" value="<fmt:message key="ch.del.bets"/>" class="button">
+                            </form>
+                        </li>
+                        <li>
+                            <form method="POST" action="./Controller" />
+                            <input type = "hidden" name = "command" value = "TakeRaces" />
+                            <input type="submit" value="<fmt:message key="races"/>" class="button"/>
                             </form>
                         </li>
                         <li>

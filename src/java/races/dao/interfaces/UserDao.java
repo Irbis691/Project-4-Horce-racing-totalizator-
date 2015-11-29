@@ -38,37 +38,13 @@ public interface UserDao {
      * @return list of all users
      */
     List<User> findAll();
-    
-    /**
-     * 
-     * @return list of all user's logins
-     */
-    List<String> findLogins();
-    
-    /**
-     * 
-     * @return list of all hashCodes of user's passwords
-     */
-    List<Integer> findPass();
-    
-    /**     
-     * @param login, user login
-     * @return type of specified user
-     */
-    int getType(String login);
-    
-    /**     
-     * @param login, user login
-     * @return id of specified user
-     */
-    int getId(String login);
 
     /**
      * update some user from DB
      * 
      * @param user 
      */
-    void update(User user);
+    void update(User user);        
 
     /**
      * delete specified user

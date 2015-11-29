@@ -10,28 +10,29 @@ import org.apache.log4j.Logger;
 import races.dao.connection.JdbcConnection;
 import races.dao.factory.DaoFactory;
 import races.dao.factory.RealDaoFactory;
+import races.entities.BetStatus;
 import races.resources.ConfigurationManager;
 import races.resources.MessageManager;
 
 /**
  * Class-command for changing size of bet
- * 
+ *
  * @version 1.0 7 Jun 2015
  * @author Пазинич
  */
 public class UpdateBetSizeCommand implements ActionCommand {
 
     /**
-     * logger variable 
+     * logger variable
      */
     private static final Logger logger = Logger.getLogger(UpdateBetSizeCommand.class);
 
     /**
-     * String-constant for bet's id 
+     * String-constant for bet's id
      */
     private static final String PARAM_NAME_BETID = "betId";
     /**
-     * String-constant for bet's size 
+     * String-constant for bet's size
      */
     private static final String PARAM_NAME_BETSIZE = "betSize";
 
@@ -56,19 +57,20 @@ public class UpdateBetSizeCommand implements ActionCommand {
                     MessageManager.getProperty("message.inpBetSize"));
             return page;
         }
-        updateBetSize(betId, betSize);
-        return page;
-    }
 
-    /**
-     * submethod for interaction with DB
-     * @param betId
-     * @param betSize 
-     */
-    private void updateBetSize(int betId, double betSize) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        daoFactory.createBetDao().updateBetSize(betId, betSize);
+        if (daoFactory.createBetDao().find(betId).getBetStatus()
+                == BetStatus.NOT_PLAYED_YET) {
+            daoFactory.createBetDao().updateBetSize(betId, betSize);
+        } else {
+            logger.error("User tried to change already fixed bet");
+            request.setAttribute("chfixBet",
+                    MessageManager.getProperty("message.chfixBet"));
+
+        }
+
+        return page;
     }
 
 }

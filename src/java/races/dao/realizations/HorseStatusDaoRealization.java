@@ -18,15 +18,17 @@ import races.dao.connection.JdbcConnection;
 
 /**
  * Class-realization of dao pattern for horse's status
+ *
  * @version 1.0 7 Jun 2015
- * 
+ *
  * @author Пазинич
  */
 public class HorseStatusDaoRealization implements HorseStatusDao {
+
     /**
-     * logger-variable 
+     * logger-variable
      */
-    private static final Logger logger = Logger.getLogger(JdbcConnection.class);
+    private static final Logger logger = Logger.getLogger(HorseStatusDaoRealization.class);
 
     /**
      * variable for connection to DB
@@ -35,38 +37,48 @@ public class HorseStatusDaoRealization implements HorseStatusDao {
     /**
      * request for inserting horse's status to DB
      */
-    private final static String insertQuery = "INSERT INTO horsestatus (horseId, raceId, horsePlace, horseCoeff) values (?, ?, ?, ?))";
+    private static final String INSERT = "INSERT INTO horsestatus (horseId, raceId, horsePlace, horseCoeff) values (?, ?, ?, ?))";
     /**
      * request for finding horse's status in DB
      */
-    private final static String findQuery = "SELECT * FROM horsestatus where horseStatusId = ?";
+    private static final String FIND = "SELECT * FROM horsestatus where horseStatusId = ?";
     /**
      * request for finding all horse's statuses in DB
      */
-    private final static String findAllQuery = "SELECT * FROM horsestatus";
+    private static final String FIND_ALL = "SELECT * FROM horsestatus";
     /**
-     * request for finding all horses who take part in specified (by id) race in DB
+     * request for finding all horses who take part in specified (by id) race in
+     * DB
      */
-    private final static String findAllByIdQuery = "SELECT * FROM horsestatus where raceId = ?";    
+    private static final String FIND_ALL_BY_ID = "SELECT * FROM horsestatus where raceId = ?";
+    /**
+     * request for finding horse's place by horses's id in DB
+     */
+    private static final String FIND_PLACE_BY_ID = "SELECT horsePlace FROM horsestatus where horseId = ? AND raceId = ?";
+    /**
+     * request for finding horse's place by horses's id in DB
+     */
+    private static final String FIND_COEFF_BY_ID = "SELECT horseCoeff FROM horsestatus where horseId = ? AND raceId = ?";
     /**
      * request for updating horse's status in DB
      */
-    private final static String updateQuery = "UPDATE horsestatus SET horseId = ?, raceId = ?, horsePlace = ?, horseCoeff = ? WHERE horseStatusId = ?";
+    private static final String UPDATE = "UPDATE horsestatus SET horseId = ?, raceId = ?, horsePlace = ?, horseCoeff = ? WHERE horseStatusId = ?";
     /**
      * request for updating horse's place in DB
      */
-    private final static String updatePlaceQuery = "UPDATE horsestatus SET horsePlace = ? WHERE horseId = ?";
+    private static final String UPDATE_PLACE = "UPDATE horsestatus SET horsePlace = ? WHERE horseId = ? AND raceId = ?";
     /**
      * request for updating horse's win rate in DB
      */
-    private final static String updateCoeffQuery = "UPDATE horsestatus SET horseCoeff = ? WHERE horseId = ?";  
+    private static final String UPDATE_COEFF = "UPDATE horsestatus SET horseCoeff = ? WHERE horseId = ? AND raceId = ?";
     /**
      * request for deleting horse's status from DB
      */
-    private final static String deleteQuery = "DELETE FROM horsestatus WHERE horseStatusId = ?";
+    private static final String DELETE = "DELETE FROM horsestatus WHERE horseStatusId = ?";
 
     /**
      * default constructor
+     *
      * @param connection
      */
     public HorseStatusDaoRealization(JdbcConnection connection) {
@@ -74,29 +86,21 @@ public class HorseStatusDaoRealization implements HorseStatusDao {
     }
 
     /**
-     * @see HorseStatusDao#insert(races.entities.HorseStatus) 
-     * 
-     * @param horseStatus 
+     * @see HorseStatusDao#insert(races.entities.HorseStatus)
+     *
+     * @param horseStatus
      */
     @Override
     public void insert(HorseStatus horseStatus) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(insertQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(INSERT)) {
                 statement.setInt(1, horseStatus.getHorseId());
                 statement.setInt(2, horseStatus.getRaceId());
                 statement.setInt(3, horseStatus.getHorsePlace());
                 statement.setDouble(4, horseStatus.getHorseCoeff());
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("HorseStatus insert error: " + ex);
@@ -104,18 +108,17 @@ public class HorseStatusDaoRealization implements HorseStatusDao {
     }
 
     /**
-     * @see HorseStatusDao#find(int) 
-     * 
-     * @param id 
+     * @see HorseStatusDao#find(int)
+     *
+     * @param id
      */
     @Override
     public HorseStatus find(int id) {
         HorseStatus horseStatus = new HorseStatus();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND)) {
                 statement.setInt(1, id);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
@@ -125,13 +128,6 @@ public class HorseStatusDaoRealization implements HorseStatusDao {
                     horseStatus.setHorsePlace(rs.getInt(4));
                     horseStatus.setHorseCoeff(rs.getDouble(5));
                 }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("HorseStatus find error: " + ex);
@@ -140,27 +136,19 @@ public class HorseStatusDaoRealization implements HorseStatusDao {
     }
 
     /**
-     * @see HorseStatusDao#findAll() 
+     * @see HorseStatusDao#findAll()
      */
     @Override
     public List<HorseStatus> findAll() {
         List<HorseStatus> horseStatuses = new ArrayList<>();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findAllQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND_ALL)) {
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     horseStatuses.add(new HorseStatus(rs.getInt(1), rs.getInt(2),
                             rs.getInt(3), rs.getInt(4), rs.getDouble(5)));
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
                 }
             }
         } catch (SQLException ex) {
@@ -168,32 +156,24 @@ public class HorseStatusDaoRealization implements HorseStatusDao {
         }
         return horseStatuses;
     }
-    
+
     /**
-     * @see HorseStatusDao#findAll(int) 
-     * 
-     * @param raceId 
+     * @see HorseStatusDao#findAll(int)
+     *
+     * @param raceId
      */
     @Override
-    public List<HorseStatus> findAll(int raceId){
+    public List<HorseStatus> findAll(int raceId) {
         List<HorseStatus> horseStatuses = new ArrayList<>();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findAllByIdQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND_ALL_BY_ID)) {
                 statement.setInt(1, raceId);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     horseStatuses.add(new HorseStatus(rs.getInt(1), rs.getInt(2),
                             rs.getInt(3), rs.getInt(4), rs.getDouble(5)));
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
                 }
             }
         } catch (SQLException ex) {
@@ -201,90 +181,110 @@ public class HorseStatusDaoRealization implements HorseStatusDao {
         }
         return horseStatuses;
     }
+    
+    @Override
+    public int findHorsePlase(int horseId, int raceId) {
+        int horsePlace = 0;
+        try {
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND_PLACE_BY_ID)) {
+                statement.setInt(1, horseId);
+                statement.setInt(2, raceId);
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    horsePlace = rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            logger.error("HorseStatus findAll by id error: " + ex);
+        }
+        return horsePlace;        
+    }
+    
+    @Override
+    public double findHorseCoeff(int horseId, int raceId) {
+        double horseCoeff = 0;
+        try {
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND_COEFF_BY_ID)) {
+                statement.setInt(1, horseId);
+                statement.setInt(2, raceId);
+                ResultSet rs = statement.executeQuery();
+                while (rs.next()) {
+                    horseCoeff = rs.getDouble(1);
+                }
+            }
+        } catch (SQLException ex) {
+            logger.error("HorseStatus findAll by id error: " + ex);
+        }
+        return horseCoeff;        
+    }
 
     /**
-     * @see HorseStatusDao#update(races.entities.HorseStatus) 
-     * 
-     * @param horseStatus 
+     * @see HorseStatusDao#update(races.entities.HorseStatus)
+     *
+     * @param horseStatus
      */
     @Override
     public void update(HorseStatus horseStatus) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(updateQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(UPDATE)) {
                 statement.setInt(1, horseStatus.getHorseId());
                 statement.setInt(2, horseStatus.getRaceId());
                 statement.setInt(3, horseStatus.getHorsePlace());
                 statement.setDouble(4, horseStatus.getHorseCoeff());
                 statement.setInt(5, horseStatus.getHorseStatusId());
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("HorseStatus update error: " + ex);
         }
     }
-    
+
     /**
-     * @see HorseStatusDao#updatePlace(int, int) 
-     * 
+     * @param raceId
+     * @see HorseStatusDao#updatePlace(int, int)
+     *
      * @param id
      * @param place
      */
     @Override
-    public void updatePlace(int id, int place) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
+    public void updatePlace(int id, int place, int raceId) {
         try {
-            try {
-                statement = con.prepareStatement(updatePlaceQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(UPDATE_PLACE)) {
                 statement.setInt(1, place);
                 statement.setInt(2, id);
+                statement.setInt(3, raceId);
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("HorseStatus updatePlace error: " + ex);
         }
     }
-    
+
     /**
-     * @see HorseStatusDao#updateCoeff(int, double) 
-     * 
+     * @see HorseStatusDao#updateCoeff(int, double)
+     *
      * @param id
+     * @param raceId
      * @param coeff
      */
     @Override
-    public void updateCoeff(int id, double coeff) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
+    public void updateCoeff(int id, int raceId, double coeff) {
         try {
-            try {
-                statement = con.prepareStatement(updateCoeffQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(UPDATE_COEFF)) {
                 statement.setDouble(1, coeff);
                 statement.setInt(2, id);
+                statement.setInt(3, raceId);
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("HorseStatus updateCoeff error: " + ex);
@@ -292,26 +292,18 @@ public class HorseStatusDaoRealization implements HorseStatusDao {
     }
 
     /**
-     * @see HorseStatusDao#delete(int) 
-     * 
-     * @param id 
+     * @see HorseStatusDao#delete(int)
+     *
+     * @param id
      */
     @Override
     public void delete(int id) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(deleteQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(DELETE)) {
                 statement.setInt(1, id);
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("HorseStatus delete error: " + ex);

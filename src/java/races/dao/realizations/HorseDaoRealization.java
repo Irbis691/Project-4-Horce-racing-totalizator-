@@ -18,15 +18,17 @@ import races.dao.connection.JdbcConnection;
 
 /**
  * Class-realization of dao pattern for horse
+ *
  * @version 1.0 7 Jun 2015
- * 
+ *
  * @author Пазинич
  */
 public class HorseDaoRealization implements HorseDao {
+
     /**
-     * logger-variable 
+     * logger-variable
      */
-    private static final Logger logger = Logger.getLogger(JdbcConnection.class);
+    private static final Logger logger = Logger.getLogger(HorseDaoRealization.class);
 
     /**
      * variable for connection to DB
@@ -35,34 +37,31 @@ public class HorseDaoRealization implements HorseDao {
     /**
      * request for inserting horse to DB
      */
-    private final static String insertQuery = "INSERT INTO horses (horseName) values (?)";
+    private static final String INSERT = "INSERT INTO horses (horseName) values (?)";
     /**
      * request for finding horse in DB
      */
-    private final static String findQuery = "SELECT * FROM horses where horseId = ?";
+    private static final String FIND = "SELECT * FROM horses where horseId = ?";
     /**
      * request for finding all horses in DB
      */
-    private final static String findAllQuery = "SELECT * FROM horses";  
-    /**
-     * request for finding horse's name by horse's id from DB
-     */
-    private final static String findNameQuery = "SELECT horseName FROM horses where horseId = ?";
+    private static final String FIND_ALL = "SELECT * FROM horses";
     /**
      * request for finding horse's id by horse's name from DB
      */
-    private final static String findIdQuery = "SELECT horseId FROM horses where horseName = ?";
+    private static final String FIND_BY_NAME = "SELECT * FROM horses where horseName = ?";
     /**
      * request for updating horse in DB
      */
-    private final static String updateQuery = "UPDATE horses SET horseName = ? WHERE horseId = ?";
+    private static final String UPDATE = "UPDATE horses SET horseName = ? WHERE horseId = ?";
     /**
      * request for deleting horse from DB
      */
-    private final static String deleteQuery = "DELETE FROM horses WHERE horseId = ?";
-    
+    private static final String DELETE = "DELETE FROM horses WHERE horseId = ?";
+
     /**
      * default constructor
+     *
      * @param connection
      */
     public HorseDaoRealization(JdbcConnection connection) {
@@ -70,26 +69,18 @@ public class HorseDaoRealization implements HorseDao {
     }
 
     /**
-     * @see HorseDao#insert(races.entities.Bet) 
-     * 
-     * @param horse 
+     * @see HorseDao#insert(races.entities.Bet)
+     *
+     * @param horse
      */
     @Override
     public void insert(Horse horse) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(insertQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(INSERT)) {
                 statement.setString(1, horse.getHorseName());
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("Horse insert error: " + ex);
@@ -97,30 +88,22 @@ public class HorseDaoRealization implements HorseDao {
     }
 
     /**
-     * @see HorseDao#find(int) 
-     * 
-     * @param id 
+     * @see HorseDao#find(int)
+     *
+     * @param id
      */
     @Override
     public Horse find(int id) {
         Horse horse = new Horse();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND)) {
                 statement.setInt(1, id);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     horse.setHorseId(rs.getInt(1));
                     horse.setHorseName(rs.getString(2));
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
                 }
             }
         } catch (SQLException ex) {
@@ -130,121 +113,66 @@ public class HorseDaoRealization implements HorseDao {
     }
 
     /**
-     * @see HorseDao#findAll() 
-     * 
+     * @see HorseDao#findAll()
+     *
      */
     @Override
     public List<Horse> findAll() {
         List<Horse> horses = new ArrayList<>();
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(findAllQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND_ALL)) {
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
                     horses.add(new Horse(rs.getInt(1), rs.getString(2)));
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
                 }
             }
         } catch (SQLException ex) {
             logger.error("Horse findAll error: " + ex);
         }
         return horses;
-    }              
-    
-    /**
-     * @see HorseDao#findName(int)  
-     * 
-     * @param id 
-     */
-    @Override
-    public String findName(int id) {
-        String name = null;
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
-        try {
-            try {
-                statement = con.prepareStatement(findNameQuery);
-                statement.setInt(1, id);
-                ResultSet rs = statement.executeQuery();
-                while (rs.next()) {
-                    name = rs.getString(1);
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-            }
-        } catch (SQLException ex) {
-            logger.error("Horse findName error: " + ex);
-        }
-        return name;
     }
-    
+
     /**
-     * @see HorseDao#findId(java.lang.String) 
-     * 
-     * @param name 
+     * @see HorseDao#findId(java.lang.String)
+     *
+     * @param name
      */
     @Override
-    public int findId(String name) {
-        int id = 0;
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
+    public Horse find(String name) {
+        Horse horse = new Horse();
         try {
-            try {
-                statement = con.prepareStatement(findIdQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(FIND_BY_NAME)) {
                 statement.setString(1, name);
                 ResultSet rs = statement.executeQuery();
                 while (rs.next()) {
-                    id = rs.getInt(1);
-                }
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
+                    horse.setHorseId(rs.getInt(1));
+                    horse.setHorseName(rs.getString(2));
                 }
             }
         } catch (SQLException ex) {
             logger.error("Horse findId error: " + ex);
         }
-        return id;
+        return horse;
     }
 
     /**
-     * @see HorseDao#update(races.entities.Horse) 
-     * 
-     * @param horse 
+     * @see HorseDao#update(races.entities.Horse)
+     *
+     * @param horse
      */
     @Override
     public void update(Horse horse) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(updateQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(UPDATE)) {
                 statement.setString(1, horse.getHorseName());
                 statement.setInt(2, horse.getHorseId());
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("Horse update error: " + ex);
@@ -252,26 +180,18 @@ public class HorseDaoRealization implements HorseDao {
     }
 
     /**
-     * @see HorseDao#delete(int)  
-     * 
-     * @param id 
+     * @see HorseDao#delete(int)
+     *
+     * @param id
      */
     @Override
     public void delete(int id) {
-        Connection con = connection.getConnection();
-        PreparedStatement statement = null;
         try {
-            try {
-                statement = con.prepareStatement(deleteQuery);
+            try (Connection con = connection.getConnection();
+                    PreparedStatement statement
+                    = con.prepareStatement(DELETE)) {
                 statement.setInt(1, id);
                 statement.executeUpdate();
-            } finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
             }
         } catch (SQLException ex) {
             logger.error("Horse delete error: " + ex);

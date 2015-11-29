@@ -9,14 +9,14 @@ import races.command.ActionCommand;
 import races.command.ChangeLanguageCommand;
 import races.command.DeleteBetCommand;
 import races.command.DeleteUserCommand;
+import races.command.FixRaceResult;
 import races.command.LoginCommand;
 import races.command.LogoutCommand;
 import races.command.PlaceBetCommand;
 import races.command.RegistrationCommand;
-import races.command.TakeHorsesCommand;
-import races.command.TakeHorsesParamCommand;
+import races.command.TakeHorsesWithCoeffOrPalacesCommand;
 import races.command.TakeRacesCommand;
-import races.command.TakeUserBetsCommand;
+import races.command.TakeUserBetsBalanceCommand;
 import races.command.TakeUsersCommand;
 import races.command.ToResDelPageCommand;
 import races.command.UpdateBetSizeCommand;
@@ -25,7 +25,7 @@ import races.command.UpdateHorsePlaceCommand;
 
 /**
  * Container of commands
- * 
+ *
  * @version 1.0 7 Jun 2015
  * @author Пазинич
  */
@@ -39,7 +39,6 @@ public enum CommandEnum {
                     this.command = new LoginCommand();
                 }
             },
-
     /**
      *
      */
@@ -48,7 +47,6 @@ public enum CommandEnum {
                     this.command = new LogoutCommand();
                 }
             },
-
     /**
      *
      */
@@ -57,7 +55,6 @@ public enum CommandEnum {
                     this.command = new RegistrationCommand();
                 }
             },
-
     /**
      *
      */
@@ -66,7 +63,6 @@ public enum CommandEnum {
                     this.command = new DeleteUserCommand();
                 }
             },
-
     /**
      *
      */
@@ -75,7 +71,6 @@ public enum CommandEnum {
                     this.command = new UpdateHorsePlaceCommand();
                 }
             },
-
     /**
      *
      */
@@ -84,7 +79,6 @@ public enum CommandEnum {
                     this.command = new UpdateHorseCoeffCommand();
                 }
             },
-
     /**
      *
      */
@@ -93,7 +87,6 @@ public enum CommandEnum {
                     this.command = new PlaceBetCommand();
                 }
             },
-
     /**
      *
      */
@@ -102,7 +95,6 @@ public enum CommandEnum {
                     this.command = new UpdateBetSizeCommand();
                 }
             },
-
     /**
      *
      */
@@ -111,7 +103,6 @@ public enum CommandEnum {
                     this.command = new DeleteBetCommand();
                 }
             },
-
     /**
      *
      */
@@ -120,16 +111,14 @@ public enum CommandEnum {
                     this.command = new ChangeLanguageCommand();
                 }
             },
-
     /**
      *
      */
     TAKEUSERBETS {
                 {
-                    this.command = new TakeUserBetsCommand();
+                    this.command = new TakeUserBetsBalanceCommand();
                 }
             },
-
     /**
      *
      */
@@ -138,40 +127,33 @@ public enum CommandEnum {
                     this.command = new TakeRacesCommand();
                 }
             },
-
     /**
      *
      */
-    TAKEHORSES {
+    TAKEHORSESWITHCOEFFORPLACES {
                 {
-                    this.command = new TakeHorsesCommand();
+                    this.command = new TakeHorsesWithCoeffOrPalacesCommand();
                 }
             },
-
     /**
      *
      */
-    TAKEHORSESPARAM {
-                {
-                    this.command = new TakeHorsesParamCommand();
-                }
-            },
-
-    /**
-     *
-     */
-    TAKEUSERS{
+    TAKEUSERS {
                 {
                     this.command = new TakeUsersCommand();
                 }
             },
-
     /**
      *
      */
-    TORESDELPAGE{
+    TORESDELPAGE {
                 {
                     this.command = new ToResDelPageCommand();
+                }
+            },
+    FIXRACERESULTS {
+                {
+                    this.command = new FixRaceResult();
                 }
             };
 
@@ -180,7 +162,7 @@ public enum CommandEnum {
      */
     ActionCommand command;
 
-    /**     
+    /**
      * @return some command
      */
     public ActionCommand getCurrentCommand() {

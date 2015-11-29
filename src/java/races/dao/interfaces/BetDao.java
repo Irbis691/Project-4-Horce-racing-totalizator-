@@ -30,11 +30,11 @@ public interface BetDao {
      * @return bet whith specified id
      */
     Bet find(int id);
-
+    
     /**
-     * find all bets in DB
+     * find all bets by in DB
      * 
-     * @return list of all bets
+     * @return 
      */
     List<Bet> findAll();
     
@@ -45,13 +45,14 @@ public interface BetDao {
      * @return list of bets of specified user
      */
     List<Bet> findByUserId(int userId);
-
+    
     /**
-     * update some bet from DB
+     * find all specified by raceId bets
      * 
-     * @param bet 
+     * @param raceId
+     * @return list of bets of specified race
      */
-    void update(Bet bet);
+    List<Bet> findByRaceId(int raceId);
     
     /**
      * update size of specified bet 
@@ -60,7 +61,13 @@ public interface BetDao {
      * @param betSize 
      */
     void updateBetSize(int betId, double betSize);
-
+    /**
+     * update status of specified bet 
+     * 
+     * @param betId
+     * @param status 
+     */
+    void updateBetStatus(int betId, int status);
     /**
      * delete specified bet
      * 

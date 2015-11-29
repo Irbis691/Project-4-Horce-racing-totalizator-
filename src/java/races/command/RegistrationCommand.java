@@ -6,6 +6,7 @@
 package races.command;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
@@ -41,9 +42,10 @@ public class RegistrationCommand implements ActionCommand {
      * String-constant for user's type
      */
     private static final String PARAM_NAME_TYPE = "type";
-    private static final int ADMIN_TYPE = 1;
-    private static final int BOOKIE_TYPE = 2;
+    
     private static final int CLIENT_TYPE = 3;
+    
+    private static final int START_BALANCE = 10000;
 
     @Override
     public String execute(HttpServletRequest request) {
@@ -78,7 +80,7 @@ public class RegistrationCommand implements ActionCommand {
      */
     private String whereTo(int type, HttpServletRequest request) {
         String page;
-        if (type != 3) {
+        if (type != CLIENT_TYPE) {
             page = new TakeUsersCommand().execute(request);
         } else {
             page = ConfigurationManager.getProperty("path.page.registration");
@@ -113,9 +115,9 @@ public class RegistrationCommand implements ActionCommand {
     private boolean checkLoginUniq(String enterLogin) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        ArrayList<String> loginList = (ArrayList<String>) daoFactory.createUserDao().findLogins();
-        for (String login : loginList) {
-            if (login.equals(enterLogin)) {
+        List<User> users = daoFactory.createUserDao().findAll();
+        for (User user : users) {
+            if (user.getLogin().equals(enterLogin)) {
                 return false;
             }
         }
@@ -133,7 +135,7 @@ public class RegistrationCommand implements ActionCommand {
     private int regNewUser(String enterLogin, String enterPass, int type) {
         JdbcConnection connection = JdbcConnection.getInstance();
         DaoFactory daoFactory = new RealDaoFactory(connection);
-        User user = new User(enterLogin, enterPass.hashCode(), type);
+        User user = new User(enterLogin, enterPass.hashCode(), type, START_BALANCE);
         return daoFactory.createUserDao().insert(user);
     }
 }

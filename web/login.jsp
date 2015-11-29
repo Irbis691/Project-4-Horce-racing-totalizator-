@@ -21,14 +21,12 @@
                 <li><form method="POST" action="./Controller" />
                     <input type = "hidden" name = "command" value = "changeLanguage" />
                     <input type = "hidden" name = "path" value = "path.page.login" />
-                    <input type = "hidden" name = "req" value = "none" />
                     <input type = "hidden" name = "lang" value = "en_US" />
                     <input type="submit" value="<fmt:message key="en"/>" class="button">
                     </form></li>
                 <li><form method="POST" action="./Controller" />
                     <input type = "hidden" name = "command" value = "changeLanguage" />
                     <input type = "hidden" name = "path" value = "path.page.login" />
-                    <input type = "hidden" name = "req" value = "none" />
                     <input type = "hidden" name = "lang" value = "ru_RU" />
                     <input type="submit" value="<fmt:message key="ru"/>" class="button">
                 </form></li>

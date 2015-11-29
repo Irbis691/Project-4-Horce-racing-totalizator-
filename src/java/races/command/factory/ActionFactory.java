@@ -21,7 +21,7 @@ public class ActionFactory {
     /**
      * method define what command is requested by string from request and return
      * it
-     * 
+     *
      * @param request
      * @return requested command
      */
@@ -31,11 +31,8 @@ public class ActionFactory {
         if (action == null || action.isEmpty()) {
             return current;
         }
-        try {
-            CommandEnum currentEnum = CommandEnum.valueOf(action.toUpperCase());
-            current = currentEnum.getCurrentCommand();
-        } catch (IllegalArgumentException e) {
-        }
+        CommandEnum currentEnum = CommandEnum.valueOf(action.toUpperCase());
+        current = currentEnum.getCurrentCommand();
         return current;
     }
 }

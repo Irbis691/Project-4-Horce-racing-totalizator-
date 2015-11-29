@@ -29,6 +29,11 @@ public class User {
      * type of user (1 = admin, 2 = bookie, 3 = client)
      */
     private int userType;
+    
+    /**
+     * curreent user balance
+     */
+    private double userBalance;
 
     /**
      * default constructor
@@ -43,12 +48,15 @@ public class User {
      * @param login
      * @param passwordHash
      * @param userType
+     * @param userBalance
      */
-    public User(int userId, String login, int passwordHash, int userType) {
+    public User(int userId, String login, int passwordHash, int userType,
+            double userBalance) {
         this.userId = userId;
         this.login = login;
         this.passwordHash = passwordHash;
         this.userType = userType;
+        this.userBalance = userBalance;
     }
     
     /**
@@ -57,11 +65,14 @@ public class User {
      * @param login
      * @param passwordHash
      * @param userType
+     * @param userBalance
      */
-    public User(String login, int passwordHash, int userType) {        
+    public User(String login, int passwordHash, int userType,
+            double userBalance) {        
         this.login = login;
         this.passwordHash = passwordHash;
         this.userType = userType;
+        this.userBalance = userBalance;
     }
     
     /**
@@ -134,6 +145,24 @@ public class User {
      */
     public void setUserType(int userType) {
         this.userType = userType;
+    }
+
+    /**
+     * getter for userBalance
+     * 
+     * @return userType
+     */
+    public double getUserBalance() {
+        return userBalance;
+    }
+    
+     /**
+     * setter for userBalance  
+     * 
+     * @param userBalance
+     */
+    public void setUserBalance(double userBalance) {
+        this.userBalance = userBalance;
     }
     
 }
